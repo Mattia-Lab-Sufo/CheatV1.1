@@ -7,42 +7,70 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "Caricamento Moduli Grafici...",
    LoadingSubtitle = "Pronto all'ottimizzazione",
    ConfigurationSaving = { Enabled = false }
-})
+ })
 
 local MainTab = Window:CreateTab("Ottimizzazione", 4483362458)
 
 -- =======================================================
--- FUNZIONI REALI DI OTTIMIZZAZIONE & ANTI-PAUSE
+-- STATI PERMANENTI (RIMANGONO ACCESI PER SEMPRE)
 -- =======================================================
+local AntiPauseAttivo = false
 
--- Funzione Anti-AFK (Impedisce il Game Paused)
-local antiAfkAttivo = false
-local function AttivaAntiAFK()
-    if antiAfkAttivo then 
-        Rayfield:Notify({Title = "Info", Content = "L'Anti-Game Paused è già attivo!", Duration = 3})
+-- Funzione Unica di Protezione Totale Permanente
+local function AttivaProtezioneTotale()
+    if AntiPauseAttivo then 
+        Rayfield:Notify({Title = "Info", Content = "Le protezioni sono già attive permanentemente!", Duration = 3})
         return 
     end
     
-    antiAfkAttivo = true
+    AntiPauseAttivo = true
     
-    Players.LocalPlayer.Idled:Connect(function()
-        if antiAfkAttivo then
-            VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-            task.wait(1)
-            VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    -- [1] ANTI-AFK PERMANENTE: Simula movimenti hardware ogni volta che il player è fermo
+    pcall(function()
+        Players.LocalPlayer.Idled:Connect(function()
+            if AntiPauseAttivo then
+                VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+                task.wait(0.5)
+                VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+            end
+        end)
+    end)
+    
+    -- [2] ANTI-GAMEPLAY PAUSED PERMANENTE: Loop infinito che sblocca le auto veloci
+    task.spawn(function()
+        while AntiPauseAttivo do
+            pcall(function()
+                if Players.LocalPlayer and Players.LocalPlayer:FindFirstChild("GameplayPaused") then
+                    if Players.LocalPlayer.GameplayPaused == true then
+                        Players.LocalPlayer.GameplayPaused = false -- Forza lo sblocco immediato del veicolo
+                    end
+                end
+            end)
+            task.wait(0.05) -- Controllo ultra rapido a 20Hz per non far fermare la macchina
         end
     end)
     
+    -- [3] ANTI-SCHERMATA NERA PERMANENTE: Rimuove all'istante la GUI di blocco mappa
+    pcall(function()
+        game:GetService("CoreGui").DescendantAdded:Connect(function(descendant)
+            if AntiPauseAttivo and (descendant.Name == "GameplayPausedSign" or descendant.Name:lower():find("paused")) then
+                pcall(function()
+                    descendant.Visible = false
+                    descendant:Destroy()
+                end)
+            end
+        end)
+    end)
+    
     Rayfield:Notify({
-        Title = "Anti-AFK Attivato!", 
-        Content = "Protezione attiva contro il Kick per inattività.", 
-        Duration = 4
+        Title = "Protezione Attivata!", 
+        Content = "Anti-AFK e Anti-Game Paused attivi PERMANENTEMENTE.", 
+        Duration = 5
     })
 end
 
 -- Funzione FPS Boost REALE e Sicura
 local function BoostFPS()
-    -- Modifica il terreno in modo sicuro senza rompere lo script
     pcall(function()
         local terrain = workspace:FindFirstChildOfClass("Terrain")
         if terrain then
@@ -53,19 +81,16 @@ local function BoostFPS()
         end
     end)
 
-    -- Tenta di abbassare la qualità di rendering globale (se l'executor lo permette)
     pcall(function()
         settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
     end)
 
-    -- Ottimizzazione aggressiva degli oggetti nel mondo di gioco
     for _, v in pairs(game:GetDescendants()) do
         pcall(function()
             if v:IsA("Part") or v:IsA("CornerWedgePart") or v:IsA("WedgePart") or v:IsA("TrussPart") then
                 v.Material = Enum.Material.SmoothPlastic
                 v.Reflectance = 0
             elseif v:IsA("Decal") or v:IsA("Texture") then
-                -- Invece di distruggerle (che può causare lag istantaneo), le rendiamo invisibili
                 v.Transparency = 1 
             elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") then
                 v.Enabled = false
@@ -78,7 +103,7 @@ local function BoostFPS()
         end)
     end
     
-    Rayfield:Notify({Title = "FPS Boosted!", Content = "Mondo alleggerito. Texture nascoste e ombre disattivate.", Duration = 4})
+    Rayfield:Notify({Title = "FPS Boosted!", Content = "Mondo alleggerito. Grafica ridotta al minimo.", Duration = 4})
 end
 
 -- Funzione Pulizia Memoria RAM
@@ -88,7 +113,7 @@ local function CleanMemory()
         task.wait(0.1)
         Rayfield:Notify({Title = "Memoria Pulita", Content = "Liberati circa " .. tostring(math.floor(prima / 1024)) .. " MB di RAM.", Duration = 4})
     else
-        Rayfield:Notify({Title = "Memoria Pulita", Content = "Cache del gioco svuotata.", Duration = 4})
+        Rayfield:Notify({Title = "Memoria Pulita", Content = "Cache del gioco svuorata.", Duration = 4})
     end
 end
 
@@ -96,13 +121,13 @@ end
 -- INTERFACCIA GRAFICA (ELEMENTI)
 -- =======================================================
 
-MainTab:CreateSection("🛡️ Protezione Account")
+MainTab:CreateSection("🛡️ Moduli di Sicurezza e Bypass")
 
 MainTab:CreateButton({
-   Name = "🛡️ Attiva Anti-Game Paused (Anti-AFK)",
-   Interact = "Attiva",
+   Name = "⚡ Attiva Anti-AFK & Anti-Game Paused (Permanente)",
+   Interact = "Accendi",
    Callback = function()
-       AttivaAntiAFK()
+       AttivaProtezioneTotale()
    end,
 })
 
