@@ -1,8 +1,8 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local HttpService = game:GetService("HttpService")
 
--- 🔴 Aggiornato con l'indirizzo Localhost (127.0.0.1)
-local SERVER_URL = "http://127.0.0.1:5000/verifica"
+-- Usiamo l'IP reale del tuo PC per evitare l'errore "non raggiungibile" dell'executor
+local SERVER_URL = "http://192.168.1.233:5000/verifica"
 
 local Window = Rayfield:CreateWindow({
    Name = "Mattia Hub - Bootloader",
@@ -64,7 +64,7 @@ LoginTab:CreateButton({
                Rayfield:Notify({Title = "Errore", Content = "Key non valida!", Duration = 3})
            end
        else
-           Rayfield:Notify({Title = "Errore Server", Content = "Server Python non raggiungibile su localhost.", Duration = 3})
+           Rayfield:Notify({Title = "Errore Server", Content = "Impossibile connettersi al server locale. Verifica che il PC sia acceso.", Duration = 3})
        end
    end,
 })
@@ -89,15 +89,15 @@ LoginTab:CreateButton({
 -- =======================================================
 -- METODO 2: PANNELLO SEGRETO AOT (Admin o Tester)
 -- =======================================================
-local emailInserita = ""
+local usernameInserito = ""
 local passwordInserita = ""
 
 StaffTab:CreateInput({
-   Name = "Email",
-   PlaceholderText = "Inserisci la tua email...",
+   Name = "Username",
+   PlaceholderText = "Inserisci il tuo username...",
    RemoveTextAfterFocusLost = false,
    Callback = function(Text)
-       emailInserita = Text
+       usernameInserito = Text
    end,
 })
 
@@ -114,14 +114,23 @@ StaffTab:CreateButton({
    Name = "Login AOT",
    Interact = "Accedi",
    Callback = function()
-       if emailInserita == "mattianglano30@gmail.com" and passwordInserita == "mattia192837" then
-           Rayfield:Notify({Title = "Benvenuto", Content = "Credenziali corrette. Sblocco in corso...", Duration = 3})
+       -- Verifica dei due nuovi account configurati
+       local loginValido = false
+       
+       if usernameInserito == "Lattejr" and passwordInserita == "Mattia123456" then
+           loginValido = true
+       elseif usernameInserito == "Silent" and passwordInserita == "Silent123456" then
+           loginValido = true
+       end
+
+       if loginValido then
+           Rayfield:Notify({Title = "Benvenuto Staff", Content = "Credenziali autorizzate. Sblocco...", Duration = 3})
            task.wait(1)
            
            Rayfield:Destroy()
            loadstring(game:HttpGet("https://raw.githubusercontent.com/Mattia-Lab-Sufo/CheatV1.1/refs/heads/main/cheat.lua"))()
        else
-           Rayfield:Notify({Title = "Errore", Content = "Credenziali AOT errate o non autorizzate!", Duration = 3})
+           Rayfield:Notify({Title = "Errore", Content = "Username o Password AOT errate!", Duration = 3})
        end
    end,
 })
