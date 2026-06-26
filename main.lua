@@ -1,38 +1,52 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local HttpService = game:GetService("HttpService")
+
+-- Cambia questo URL con l'indirizzo pubblico del tuo server Python (es. il link di Ngrok)
+local SERVER_URL = "http://IL_TUO_LINK_SERVER_QUI:5000/verifica"
 
 local Window = Rayfield:CreateWindow({
    Name = "Mattia Hub",
-   LoadingTitle = "Controllo Licenza...",
-   LoadingSubtitle = "by Mattia",
-   ConfigurationSaving = {
-      Enabled = false,
-      FolderName = "MattiaHubConfig"
-   },
+   LoadingTitle = "Verifica Account...",
+   LoadingSubtitle = "In connessione con il database...",
+   ConfigurationSaving = { Enabled = false },
    
-   -- 🔴 QUI ATTIVI IL SISTEMA DI LOGIN CON CHIAVE
-   KeySystem = true, 
+   KeySystem = true,
    KeySettings = {
-      Title = "Sistema di Accesso",
-      Subtitle = "Inserisci la chiave generata",
-      Note = "Usa il programma Python per generare la chiave valida.",
-      FileName = "ChiaveSegreta", 
-      SaveKey = false, -- Se metti true, memorizza la chiave sul dispositivo dell'utente per i login successivi
+      Title = "Database Login",
+      Subtitle = "Inserisci la chiave d'accesso",
+      Note = "Genera la chiave dal pannello di controllo.",
+      FileName = "SessionKey",
+      SaveKey = false,
+      GrabKeyFromSite = false, -- 🔴 DISATTIVATO: Non usiamo più i file di testo statici
       
-      -- Se imposti questo su TRUE, Rayfield prenderà le chiavi direttamente dal link RAW inserito sotto
-      GrabKeyFromSite = true, 
-      
-      -- Inserisci qui il link RAW del file (es. su GitHub) dove Python caricherà le chiavi valide
-      Key = {"https://raw.githubusercontent.com/Mattia-Lab-Sufo/CheatV1.1/refs/heads/main/keySystem.txt"} 
+      -- Funzione personalizzata di Rayfield per verificare la chiave
+      Actions = {
+         OnSubmit = function(Window, Key)
+            -- Prepariamo la richiesta da mandare al server Python
+            local data = { ["key"] = Key }
+            local jsonData = HttpService:JSONEncode(data)
+            
+            local success, response = pcall(function()
+                return game:HttpPost(SERVER_URL, jsonData, "application/json")
+            end)
+            
+            if success then
+                local responseData = HttpService:JSONDecode(response)
+                if responseData and responseData.valid == true then
+                    -- Se il server risponde che è valida, sblocchiamo il menu
+                    return true
+                else
+                    Rayfield:Notify({Title = "Errore", Content = "Chiave errata o scaduta!", Duration = 3})
+                    return false
+                end
+            else
+                Rayfield:Notify({Title = "Errore Server", Content = "Impossibile connettersi al database.", Duration = 3})
+                return false
+            end
+         end
+      }
    }
 })
 
--- Il resto della tua Tab e dei pulsanti apparirà SOLO se la chiave inserita è corretta
+-- Questo apparirà solo se la funzione OnSubmit restituisce "true"
 local Tab = Window:CreateTab("Principale", 4483362458)
-
-Tab:CreateButton({
-   Name = "Pulsante Estetico",
-   Interact = "Clicca",
-   Callback = function()
-       print("Il menu funziona perché la chiave è corretta!")
-   end,
-})
