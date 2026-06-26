@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local HttpService = game:GetService("HttpService")
 
 -- Assicurati che l'IP sia esattamente quello del tuo PC
-local SERVER_URL = "http://192.168.1.233:5000/verifica"
+local SERVER_URL = "http://127.0.0.1:5000/verifica"
 
 -- Funzione universale per gli executor per fare richieste HTTP POST
 local function inviaRichiestaServer(chiave)
