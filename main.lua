@@ -22,7 +22,7 @@ local Window = Rayfield:CreateWindow({
       GrabKeyFromSite = true, 
       
       -- Inserisci qui il link RAW del file (es. su GitHub) dove Python caricherà le chiavi valide
-      Key = {"https://raw.githubusercontent.com/TuoAccount/TuoRepo/main/chiavi_valide.txt"} 
+      Key = {"https://raw.githubusercontent.com/Mattia-Lab-Sufo/CheatV1.1/refs/heads/main/keySystem.txt"} 
    }
 })
 
