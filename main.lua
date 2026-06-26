@@ -58,34 +58,45 @@ LoginTab:CreateButton({
 })
 
 -- =======================================================
--- TAB 2: ACCESSO STAFF (AOT) - COME PRIMA
+-- TAB 2: ACCESSO STAFF (AOT) - CON USERNAME E PASSWORD
 -- =======================================================
 local StaffTab = Window:CreateTab("Accesso Staff (AOT)", 4483362458)
 
-StaffTab:CreateSection("Pannello di Autenticazione Amministratori")
+StaffTab:CreateSection("Autenticazione Amministratori")
 
-local InputAdmin = ""
+local InputUser = ""
 StaffTab:CreateInput({
-   Name = "Codice Operatore AOT",
-   PlaceholderText = "Inserisci Username Staff...",
+   Name = "Username Staff",
+   PlaceholderText = "Inserisci il tuo Username...",
    RemoveTextAfterFocusLost = false,
    Callback = function(Text)
-       InputAdmin = Text
+       InputUser = Text
+   end,
+})
+
+local InputPass = ""
+StaffTab:CreateInput({
+   Name = "Password Staff",
+   PlaceholderText = "Inserisci la tua Password...",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(Text)
+       InputPass = Text
    end,
 })
 
 StaffTab:CreateButton({
    Name = "🛡️ Login Amministratore",
-   Interact = "Verifica AOT",
+   Interact = "Accedi",
    Callback = function()
-       if InputAdmin == "Lattejr" or InputAdmin == "Silent" then
-           Rayfield:Notify({Title = "Accesso Staff Approva!", Content = "Bentornato nel sistema, dirottamento in corso...", Duration = 3})
+       -- Controllo credenziali incrociato (Username + Password)
+       if (InputUser == "Lattejr" and InputPass == "Aot") or (InputUser == "Silent" and InputPass == "Aot") then
+           Rayfield:Notify({Title = "Accesso Staff Approvato!", Content = "Bentornato Amministratore. Dirottamento in corso...", Duration = 3})
            task.wait(1)
            Window:Destroy()
-           -- Carica direttamente il cheat bypassando la chiave standard
+           -- Carica direttamente il vero cheat.lua bypassando la chiave standard
            loadstring(game:HttpGet("https://raw.githubusercontent.com/Mattia-Lab-Sufo/CheatV1.1/refs/heads/main/cheat.lua"))()
        else
-           Rayfield:Notify({Title = "⚠️ Accesso Negato", Content = "Identità AOT non riconosciuta o invalida.", Duration = 3})
+           Rayfield:Notify({Title = "⚠️ Accesso Negato", Content = "Username o Password AOT non validi.", Duration = 3})
        end
    end,
 })
