@@ -12,7 +12,7 @@ local LINK_GET_KEY = "https://lootlabs.com/your-link-here"
 local Window = Rayfield:CreateWindow({
    Name = "Mattia Hub | Sistema di Accesso",
    LoadingTitle = "Verifica Licenza...",
-   LoadingSubtitle = "Stile Delta System",
+   LoadingSubtitle = "ShadowBlox",
    ConfigurationSaving = { Enabled = false }
 })
 
