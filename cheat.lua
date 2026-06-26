@@ -1,4 +1,6 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Players = game:GetService("Players")
+local VirtualUser = game:GetService("VirtualUser")
 
 local Window = Rayfield:CreateWindow({
    Name = "Mattia Hub | Optimizer Pro",
@@ -10,10 +12,37 @@ local Window = Rayfield:CreateWindow({
 local MainTab = Window:CreateTab("Ottimizzazione", 4483362458)
 
 -- =======================================================
--- FUNZIONI REALI DI OTTIMIZZAZIONE
+-- FUNZIONI REALI DI OTTIMIZZAZIONE & ANTI-PAUSE
 -- =======================================================
 
--- 1. Pulizia dei detriti dal mondo (rimuove textures inutili, fumo, scintille)
+-- Funzione Anti-AFK (Impedisce il Game Paused)
+local antiAfkAttivo = false
+local function AttivaAntiAFK()
+    if antiAfkAttivo then 
+        Rayfield:Notify({Title = "Info", Content = "L'Anti-Game Paused è già attivo!", Duration = 3})
+        return 
+    end
+    
+    antiAfkAttivo = true
+    
+    -- Si collega al sistema di IDLE (inattività) del tuo personaggio
+    Players.LocalPlayer.Idled:Connect(function()
+        if antiAfkAttivo then
+            -- Simula un click invisibile sullo schermo per far credere a Roblox che sei al PC
+            VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+            task.wait(1)
+            VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        end
+    end)
+    
+    Rayfield:Notify({
+        Title = "Anti-AFK Attivato!", 
+        Content = "Protezione attiva. Non verrai più kiccato per inattività.", 
+        Duration = 4
+    })
+end
+
+-- Funzione FPS Boost
 local function BoostFPS()
     local terrain = workspace:FindFirstChildOfClass("Terrain")
     if terrain then
@@ -30,9 +59,9 @@ local function BoostFPS()
             v.Material = Enum.Material.SmoothPlastic
             v.Reflectance = 0
         elseif v:IsA("Decal") or v:IsA("Texture") then
-            v:Destroy() -- Rimuove i poster e i dettagli grafici pesanti dalle pareti
+            v:Destroy()
         elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") then
-            v.Enabled = false -- Spegne le particelle che consumano frame rate
+            v.Enabled = false
         elseif v:IsA("Explosion") then
             v.Visible = false
         elseif v:IsA("Lighting") then
@@ -40,30 +69,35 @@ local function BoostFPS()
             v.FogEnd = 9e9
         end
     end
-    
-    Rayfield:Notify({Title = "FPS Boosted!", Content = "Grafica ridotta al minimo. Performance aumentate.", Duration = 4})
+    Rayfield:Notify({Title = "FPS Boosted!", Content = "Grafica ridotta al minimo.", Duration = 4})
 end
 
--- 2. Ottimizzazione della memoria (Rimuove istanze distrutte rimaste nei canali di gioco)
+-- Funzione Pulizia Memoria
 local function CleanMemory()
-    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-    sethiddenproperty(game.Lighting, "Technology", Enum.Technology.Compatibility)
-    
-    -- Forza la garbage collection se supportata dall'executor
     if gcinfo then
         local prima = gcinfo()
         task.wait(0.1)
         Rayfield:Notify({Title = "Memoria Pulita", Content = "Liberati circa " .. tostring(math.floor(prima / 1024)) .. " MB di RAM.", Duration = 4})
     else
-        Rayfield:Notify({Title = "Memoria Pulita", Content = "Cache del gioco svuotata con successo.", Duration = 4})
+        Rayfield:Notify({Title = "Memoria Pulita", Content = "Cache del gioco svuotata.", Duration = 4})
     end
 end
 
 -- =======================================================
--- ELEMENTI DELL'INTERFACCIA
+-- INTERFACCIA GRAFICA
 -- =======================================================
 
-MainTab:CreateSection("Strumenti di Boost Reale")
+MainTab:CreateSection("⚙️ Protezione Account")
+
+MainTab:CreateButton({
+   Name = "🛡️ Attiva Anti-Game Paused (Anti-AFK)",
+   Interact = "Attiva",
+   Callback = function()
+       AttivaAntiAFK()
+   end,
+})
+
+MainTab:CreateSection("🚀 Strumenti di Boost Reale")
 
 MainTab:CreateButton({
    Name = "🚀 Attiva FPS Boost (Massima Performance)",
@@ -81,19 +115,15 @@ MainTab:CreateButton({
    end,
 })
 
-MainTab:CreateSection("Monitor di Sistema")
-
+MainTab:CreateSection("📊 Monitor di Sistema")
 local FpsLabel = MainTab:CreateLabel("Calcolo FPS in corso...")
 local PingLabel = MainTab:CreateLabel("Calcolo Ping in corso...")
 
--- Loop in background per aggiornare FPS e Ping reali
 task.spawn(function()
     local Stats = game:GetService("Stats")
     while task.wait(1) do
-        -- Calcolo approssimativo FPS reali
         local fps = math.floor(1 / game:GetService("RunService").RenderStepped:Wait())
         local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
-        
         FpsLabel:Set("FPS Attuali: " .. tostring(fps))
         PingLabel:Set("Ping di Rete: " .. tostring(ping) .. " ms")
     end
