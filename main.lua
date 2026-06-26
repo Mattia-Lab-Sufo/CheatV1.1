@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local HttpService = game:GetService("HttpService")
 
 -- Assicurati che l'IP sia sempre quello corretto del tuo PC
-local SERVER_URL = "http://192.168.1.233:5000/verifica"
+local SERVER_URL = "http://127.0.0.1:5000/verifica"
 
 local Window = Rayfield:CreateWindow({
    Name = "Mattia Hub - Bootloader",
