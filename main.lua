@@ -1,6 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local HttpService = game:GetService("HttpService")
 
+-- Assicurati che l'IP sia sempre quello corretto del tuo PC
 local SERVER_URL = "http://192.168.1.233:5000/verifica"
 
 local Window = Rayfield:CreateWindow({
@@ -36,7 +37,7 @@ LoginTab:CreateInput({
    end,
 })
 
--- Tasto Check Key (Ottimizzato con distruzione e concatenazione)
+-- Tasto Check Key (Verifica e chiama cheat.lua)
 LoginTab:CreateButton({
    Name = "Check Key",
    Interact = "Verifica",
@@ -66,24 +67,21 @@ LoginTab:CreateButton({
            if responseData and responseData.valid == true then
                
                Rayfield:Notify({Title = "Sbloccato", Content = "Caricamento ottimizzatore...", Duration = 2})
-               task.wait(1) -- Aspetta un secondo per mostrare la notifica
+               task.wait(1)
                
-               -- 🧠 1. OTTIMIZZAZIONE: Distruggi la grafica del Login per liberare RAM
+               -- 🧠 1. Chiude e pulisce il Login dalla memoria
                Rayfield:Destroy()
-               
-               -- 🧠 2. PULIZIA DELLA MEMORIA: Rimuoviamo i riferimenti per il Garbage Collector
                Rayfield = nil
                Window = nil
                
-               -- 🧠 3. CARICAMENTO DEL SECONDO SCRIPT SECONDO
-               -- Inserisci qui il link RAW di GitHub del tuo SECONDO file (quello con le funzioni di ottimizzazione)
-               loadstring(game:HttpGet("https://raw.githubusercontent.com/Mattia-Lab-Sufo/CheatV1.1/refs/heads/main/main_cheat.txt"))()
+               -- 🧠 2. Carica il file cheat.lua dal tuo repository
+               loadstring(game:HttpGet("https://raw.githubusercontent.com/Mattia-Lab-Sufo/CheatV1.1/refs/heads/main/cheat.lua"))()
                
            else
                Rayfield:Notify({Title = "Errore", Content = "Key non valida!", Duration = 3})
            end
        else
-           Rayfield:Notify({Title = "Errore Server", Content = "Server Python spento o non raggiungibile.", Duration = 3})
+           Rayfield:Notify({Title = "Errore Server", Content = "Server Python non raggiungibile.", Duration = 3})
        end
    end,
 })
