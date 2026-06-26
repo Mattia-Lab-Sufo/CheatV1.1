@@ -15,19 +15,17 @@ local Window = Rayfield:CreateWindow({
 -- 3. Creazione di una Tab (Scheda) nel menu
 local Tab = Window:CreateTab("Principale", 4483362458) -- Il numero è l'ID di un'icona
 
--- 4. Elemento: Slider per la Velocità
 Tab:CreateSlider({
    Name = "Modifica Velocità",
-   Info = "Cambia la velocità del tuo personaggio",
-   Min = 16,
-   Max = 300,
-   CurrentValue = 16,
-   Flag = "SliderVelocita",
+   Min = 16,         -- Il valore minimo (16 è la velocità normale)
+   Max = 300,        -- Il valore massimo
+   CurrentValue = 16, -- Il valore di partenza (DEVE essere compreso tra Min e Max)
+   Flag = "Slider1", -- Un nome unico per questo slider
    Callback = function(Value)
-      -- Logica teorica per cambiare la velocità
-      if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
-          game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-      end
+       -- Qui va il codice che si attiva quando lo muovi
+       if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+           game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+       end
    end,
 })
 
