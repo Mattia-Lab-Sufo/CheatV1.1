@@ -25,10 +25,8 @@ local function AttivaAntiAFK()
     
     antiAfkAttivo = true
     
-    -- Intercetta il momento in cui il giocatore va in IDLE
     Players.LocalPlayer.Idled:Connect(function()
         if antiAfkAttivo then
-            -- Simula un input invisibile per resettare il timer di Roblox
             VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
             task.wait(1)
             VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
@@ -37,39 +35,50 @@ local function AttivaAntiAFK()
     
     Rayfield:Notify({
         Title = "Anti-AFK Attivato!", 
-        Content = "Protezione attiva contra il Kick per inattività.", 
+        Content = "Protezione attiva contro il Kick per inattività.", 
         Duration = 4
     })
 end
 
--- Funzione FPS Boost (Alleggerisce il motore grafico)
+-- Funzione FPS Boost REALE e Sicura
 local function BoostFPS()
-    local terrain = workspace:FindFirstChildOfClass("Terrain")
-    if terrain then
-        terrain.WaterWaveSize = 0
-        terrain.WaterWaveSpeed = 0
-        terrain.WaterReflectance = 0
-        terrain.WaterDetail = Enum.WaterDetail.Low
+    -- Modifica il terreno in modo sicuro senza rompere lo script
+    pcall(function()
+        local terrain = workspace:FindFirstChildOfClass("Terrain")
+        if terrain then
+            terrain.WaterWaveSize = 0
+            terrain.WaterWaveSpeed = 0
+            terrain.WaterReflectance = 0
+            terrain.WaterDetail = Enum.WaterDetail.Low
+        end
+    end)
+
+    -- Tenta di abbassare la qualità di rendering globale (se l'executor lo permette)
+    pcall(function()
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    end)
+
+    -- Ottimizzazione aggressiva degli oggetti nel mondo di gioco
+    for _, v in pairs(game:GetDescendants()) do
+        pcall(function()
+            if v:IsA("Part") or v:IsA("CornerWedgePart") or v:IsA("WedgePart") or v:IsA("TrussPart") then
+                v.Material = Enum.Material.SmoothPlastic
+                v.Reflectance = 0
+            elseif v:IsA("Decal") or v:IsA("Texture") then
+                -- Invece di distruggerle (che può causare lag istantaneo), le rendiamo invisibili
+                v.Transparency = 1 
+            elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") then
+                v.Enabled = false
+            elseif v:IsA("Explosion") then
+                v.Visible = false
+            elseif v:IsA("Lighting") then
+                v.GlobalShadows = false
+                v.FogEnd = 9e9
+            end
+        end)
     end
     
-    settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-
-    for _, v in pairs(game:GetDescendants()) do
-        if v:IsA("Part") or v:IsA("CornerWedgePart") or v:IsA("WedgePart") or v:IsA("TrussPart") then
-            v.Material = Enum.Material.SmoothPlastic
-            v.Reflectance = 0
-        elseif v:IsA("Decal") or v:IsA("Texture") then
-            v:Destroy()
-        elseif v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Sparkles") then
-            v.Enabled = false
-        elseif v:IsA("Explosion") then
-            v.Visible = false
-        elseif v:IsA("Lighting") then
-            v.GlobalShadows = false
-            v.FogEnd = 9e9
-        end
-    end
-    Rayfield:Notify({Title = "FPS Boosted!", Content = "Grafica ridotta al minimo con successo.", Duration = 4})
+    Rayfield:Notify({Title = "FPS Boosted!", Content = "Mondo alleggerito. Texture nascoste e ombre disattivate.", Duration = 4})
 end
 
 -- Funzione Pulizia Memoria RAM
@@ -119,7 +128,6 @@ MainTab:CreateSection("📊 Monitor di Sistema")
 local FpsLabel = MainTab:CreateLabel("Calcolo FPS in corso...")
 local PingLabel = MainTab:CreateLabel("Calcolo Ping in corso...")
 
--- Loop per aggiornare i contatori reali ogni secondo
 task.spawn(function()
     local Stats = game:GetService("Stats")
     while task.wait(1) do
