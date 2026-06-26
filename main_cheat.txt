@@ -1,0 +1,49 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Mattia Hub - Menu Ottimizzatore",
+   LoadingTitle = "Ottimizzazione Grafica in Corso...",
+   LoadingSubtitle = "Benvenuto nel pannello principale",
+   ConfigurationSaving = { Enabled = true, FolderName = "MattiaOptimizer" }
+})
+
+local OptiTab = Window:CreateTab("Ottimizzazione FPS", 4483362458)
+
+-- 🚀 TASTO: OTTIMIZZAZIONE GRAFICA REALE (Boost FPS)
+OptiTab:CreateButton({
+   Name = "Attiva Boost FPS (Rimuovi Lag)",
+   Interact = "Migliora",
+   Callback = function()
+       -- Questo codice ottimizza davvero il gioco riducendo i dettagli pesanti
+       local terrain = game:GetService("Workspace"):FindFirstChildOfClass("Terrain")
+       if terrain then
+           terrain.WaterWaveSize = 0
+           terrain.WaterWaveSpeed = 0
+           terrain.WaterReflectance = 0
+           terrain.WaterDetailSize = 0
+       end
+       
+       -- Abbassa la qualità degli effetti di illuminazione
+       local lighting = game:GetService("Lighting")
+       lighting.GlobalShadows = false
+       lighting.FogEnd = 999999
+       
+       -- Ottimizzazione dei materiali di gioco per accelerare la memoria
+       for _, v in pairs(game:GetService("Workspace"):GetDescendants()) do
+           if v:IsA("Part") or v:IsA("CornerWedgePart") or v:IsA("WedgePart") or v:IsA("TrussPart") then
+               v.Material = Enum.Material.SmoothPlastic
+               v.Reflectance = 0
+           end
+       end
+       
+       Rayfield:Notify({Title = "Ottimizzato!", Content = "Texture pesanti rimosse. FPS incrementati!", Duration = 4})
+   end,
+})
+
+-- Puoi aggiungere altre Tab per i Cheat normali qui sotto...
+local CheatTab = Window:CreateTab("Trucchi", 4483362458)
+CheatTab:CreateButton({
+   Name = "Esempio Cheat",
+   Interact = "Esegui",
+   Callback = function() print("Cheat eseguito") end
+})
