@@ -1,8 +1,36 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local HttpService = game:GetService("HttpService")
 
--- Cambia questo URL con l'indirizzo pubblico del tuo server Python (es. il link di Ngrok)
-local SERVER_URL = "http://IL_TUO_LINK_SERVER_QUI:5000/verifica"
+-- Assicurati che l'IP sia esattamente quello del tuo PC
+local SERVER_URL = "http://192.168.1.233:5000/verifica"
+
+-- Funzione universale per gli executor per fare richieste HTTP POST
+local function inviaRichiestaServer(chiave)
+    local requestFunc = syn and syn.request or http and http.request or http_request or request
+    
+    if not requestFunc then
+        return false, "Executor non supporta le richieste HTTP esterni."
+    end
+
+    local data = { ["key"] = chiave }
+    local jsonData = HttpService:JSONEncode(data)
+
+    local response = requestFunc({
+        Url = SERVER_URL,
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json"
+        },
+        Body = jsonData
+    })
+
+    if response and response.StatusCode == 200 then
+        local responseData = HttpService:JSONDecode(response.Body)
+        return responseData and responseData.valid == true
+    end
+    
+    return false
+end
 
 local Window = Rayfield:CreateWindow({
    Name = "Mattia Hub",
@@ -17,30 +45,15 @@ local Window = Rayfield:CreateWindow({
       Note = "Genera la chiave dal pannello di controllo.",
       FileName = "SessionKey",
       SaveKey = false,
-      GrabKeyFromSite = false, -- 🔴 DISATTIVATO: Non usiamo più i file di testo statici
+      GrabKeyFromSite = false,
       
-      -- Funzione personalizzata di Rayfield per verificare la chiave
       Actions = {
          OnSubmit = function(Window, Key)
-            -- Prepariamo la richiesta da mandare al server Python
-            local data = { ["key"] = Key }
-            local jsonData = HttpService:JSONEncode(data)
-            
-            local success, response = pcall(function()
-                return game:HttpPost(SERVER_URL, jsonData, "application/json")
-            end)
-            
-            if success then
-                local responseData = HttpService:JSONDecode(response)
-                if responseData and responseData.valid == true then
-                    -- Se il server risponde che è valida, sblocchiamo il menu
-                    return true
-                else
-                    Rayfield:Notify({Title = "Errore", Content = "Chiave errata o scaduta!", Duration = 3})
-                    return false
-                end
+            local sistemaSbloccato = inviaRichiestaServer(Key)
+            if sistemaSbloccato then
+                return true
             else
-                Rayfield:Notify({Title = "Errore Server", Content = "Impossibile connettersi al database.", Duration = 3})
+                Rayfield:Notify({Title = "Errore", Content = "Chiave errata o scaduta!", Duration = 3})
                 return false
             end
          end
@@ -48,5 +61,13 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- Questo apparirà solo se la funzione OnSubmit restituisce "true"
+-- Questo apparirà solo se la chiave è corretta
 local Tab = Window:CreateTab("Principale", 4483362458)
+
+Tab:CreateButton({
+   Name = "Pulsante Estetico",
+   Interact = "Clicca",
+   Callback = function()
+       print("Funziona!")
+   end,
+})
