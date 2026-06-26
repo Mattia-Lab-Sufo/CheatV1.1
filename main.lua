@@ -1,43 +1,34 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local HttpService = game:GetService("HttpService")
 
--- Assicurati che l'IP sia sempre quello corretto del tuo PC
+-- 🔴 Aggiornato con l'indirizzo Localhost (127.0.0.1)
 local SERVER_URL = "http://127.0.0.1:5000/verifica"
 
 local Window = Rayfield:CreateWindow({
    Name = "Mattia Hub - Bootloader",
    LoadingTitle = "Ottimizzazione Sistema...",
-   LoadingSubtitle = "In attesa delle credenziali",
+   LoadingSubtitle = "Seleziona il metodo di accesso",
    ConfigurationSaving = { Enabled = false }
 })
 
-local LoginTab = Window:CreateTab("Accesso", 4483362458)
+-- Le due sezioni: Utenti normali e Staff
+local LoginTab = Window:CreateTab("Accesso Standard", 4483362458)
+local StaffTab = Window:CreateTab("Accesso AOT", 4483362458)
+
+-- =======================================================
+-- METODO 1: ACCESSO STANDARD CON CHIAVE PYTHON
+-- =======================================================
 local chiaveInserita = ""
 
--- Tasto AOT Credenziali
-LoginTab:CreateButton({
-   Name = "AOT (Mostra Credenziali)",
-   Interact = "Vedi",
-   Callback = function()
-       Rayfield:Notify({
-          Title = "Credenziali",
-          Content = "Email: mattianglano30@gmail.com\nPassword: mattia192837",
-          Duration = 5
-       })
-   end,
-})
-
--- Input Chiave
 LoginTab:CreateInput({
    Name = "Inserisci la Chiave",
-   PlaceholderText = "Incolla qui...",
+   PlaceholderText = "Incolla qui la chiave del server...",
    RemoveTextAfterFocusLost = false,
    Callback = function(Text)
        chiaveInserita = Text
    end,
 })
 
--- Tasto Check Key (Verifica e chiama cheat.lua)
 LoginTab:CreateButton({
    Name = "Check Key",
    Interact = "Verifica",
@@ -65,28 +56,19 @@ LoginTab:CreateButton({
        if success and response.StatusCode == 200 then
            local responseData = HttpService:JSONDecode(response.Body)
            if responseData and responseData.valid == true then
-               
-               Rayfield:Notify({Title = "Sbloccato", Content = "Caricamento ottimizzatore...", Duration = 2})
+               Rayfield:Notify({Title = "Sbloccato", Content = "Accesso Utente Autorizzato. Caricamento...", Duration = 2})
                task.wait(1)
-               
-               -- 🧠 1. Chiude e pulisce il Login dalla memoria
                Rayfield:Destroy()
-               Rayfield = nil
-               Window = nil
-               
-               -- 🧠 2. Carica il file cheat.lua dal tuo repository
                loadstring(game:HttpGet("https://raw.githubusercontent.com/Mattia-Lab-Sufo/CheatV1.1/refs/heads/main/cheat.lua"))()
-               
            else
                Rayfield:Notify({Title = "Errore", Content = "Key non valida!", Duration = 3})
            end
        else
-           Rayfield:Notify({Title = "Errore Server", Content = "Server Python non raggiungibile.", Duration = 3})
+           Rayfield:Notify({Title = "Errore Server", Content = "Server Python non raggiungibile su localhost.", Duration = 3})
        end
    end,
 })
 
--- Tasti Get Key e Assistenza
 LoginTab:CreateButton({
    Name = "Get Key",
    Interact = "Copia",
@@ -101,5 +83,45 @@ LoginTab:CreateButton({
    Interact = "Aiuto",
    Callback = function()
        Rayfield:Notify({Title = "Assistenza", Content = "Contatta l'admin se riscontri bug.", Duration = 4})
+   end,
+})
+
+-- =======================================================
+-- METODO 2: PANNELLO SEGRETO AOT (Admin o Tester)
+-- =======================================================
+local emailInserita = ""
+local passwordInserita = ""
+
+StaffTab:CreateInput({
+   Name = "Email",
+   PlaceholderText = "Inserisci la tua email...",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(Text)
+       emailInserita = Text
+   end,
+})
+
+StaffTab:CreateInput({
+   Name = "Password",
+   PlaceholderText = "Inserisci la tua password...",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(Text)
+       passwordInserita = Text
+   end,
+})
+
+StaffTab:CreateButton({
+   Name = "Login AOT",
+   Interact = "Accedi",
+   Callback = function()
+       if emailInserita == "mattianglano30@gmail.com" and passwordInserita == "mattia192837" then
+           Rayfield:Notify({Title = "Benvenuto", Content = "Credenziali corrette. Sblocco in corso...", Duration = 3})
+           task.wait(1)
+           
+           Rayfield:Destroy()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/Mattia-Lab-Sufo/CheatV1.1/refs/heads/main/cheat.lua"))()
+       else
+           Rayfield:Notify({Title = "Errore", Content = "Credenziali AOT errate o non autorizzate!", Duration = 3})
+       end
    end,
 })
