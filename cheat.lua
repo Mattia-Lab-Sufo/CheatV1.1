@@ -2,19 +2,19 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "Mattia Hub - Menu Ottimizzatore",
-   LoadingTitle = "Ottimizzazione Grafica in Corso...",
-   LoadingSubtitle = "Benvenuto nel pannello principale",
+   LoadingTitle = "Ottimizzazione Grafica...",
+   LoadingSubtitle = "Sistema Sbloccato con Successo",
    ConfigurationSaving = { Enabled = true, FolderName = "MattiaOptimizer" }
 })
 
+-- TAB 1: OTTIMIZZAZIONE E RIMOZIONE LAG
 local OptiTab = Window:CreateTab("Ottimizzazione FPS", 4483362458)
 
--- 🚀 TASTO: OTTIMIZZAZIONE GRAFICA REALE (Boost FPS)
 OptiTab:CreateButton({
    Name = "Attiva Boost FPS (Rimuovi Lag)",
    Interact = "Migliora",
    Callback = function()
-       -- Questo codice ottimizza davvero il gioco riducendo i dettagli pesanti
+       -- Codice di pulizia grafica per aumentare gli FPS
        local terrain = game:GetService("Workspace"):FindFirstChildOfClass("Terrain")
        if terrain then
            terrain.WaterWaveSize = 0
@@ -23,12 +23,8 @@ OptiTab:CreateButton({
            terrain.WaterDetailSize = 0
        end
        
-       -- Abbassa la qualità degli effetti di illuminazione
-       local lighting = game:GetService("Lighting")
-       lighting.GlobalShadows = false
-       lighting.FogEnd = 999999
+       game:GetService("Lighting").GlobalShadows = false
        
-       -- Ottimizzazione dei materiali di gioco per accelerare la memoria
        for _, v in pairs(game:GetService("Workspace"):GetDescendants()) do
            if v:IsA("Part") or v:IsA("CornerWedgePart") or v:IsA("WedgePart") or v:IsA("TrussPart") then
                v.Material = Enum.Material.SmoothPlastic
@@ -36,14 +32,17 @@ OptiTab:CreateButton({
            end
        end
        
-       Rayfield:Notify({Title = "Ottimizzato!", Content = "Texture pesanti rimosse. FPS incrementati!", Duration = 4})
+       Rayfield:Notify({Title = "Sistema Ottimizzato", Content = "Dettagli pesanti rimossi!", Duration = 4})
    end,
 })
 
--- Puoi aggiungere altre Tab per i Cheat normali qui sotto...
+-- TAB 2: SEZIONE TRUCCHI ESTETICI
 local CheatTab = Window:CreateTab("Trucchi", 4483362458)
+
 CheatTab:CreateButton({
-   Name = "Esempio Cheat",
+   Name = "Pulsante Estetico 1",
    Interact = "Esegui",
-   Callback = function() print("Cheat eseguito") end
+   Callback = function()
+       print("Azione cheat eseguita")
+   end,
 })
