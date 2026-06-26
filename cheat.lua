@@ -25,10 +25,10 @@ local function AttivaAntiAFK()
     
     antiAfkAttivo = true
     
-    -- Si collega al sistema di IDLE (inattività) del tuo personaggio
+    -- Intercetta il momento in cui il giocatore va in IDLE
     Players.LocalPlayer.Idled:Connect(function()
         if antiAfkAttivo then
-            -- Simula un click invisibile sullo schermo per far credere a Roblox che sei al PC
+            -- Simula un input invisibile per resettare il timer di Roblox
             VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
             task.wait(1)
             VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
@@ -37,12 +37,12 @@ local function AttivaAntiAFK()
     
     Rayfield:Notify({
         Title = "Anti-AFK Attivato!", 
-        Content = "Protezione attiva. Non verrai più kiccato per inattività.", 
+        Content = "Protezione attiva contra il Kick per inattività.", 
         Duration = 4
     })
 end
 
--- Funzione FPS Boost
+-- Funzione FPS Boost (Alleggerisce il motore grafico)
 local function BoostFPS()
     local terrain = workspace:FindFirstChildOfClass("Terrain")
     if terrain then
@@ -69,10 +69,10 @@ local function BoostFPS()
             v.FogEnd = 9e9
         end
     end
-    Rayfield:Notify({Title = "FPS Boosted!", Content = "Grafica ridotta al minimo.", Duration = 4})
+    Rayfield:Notify({Title = "FPS Boosted!", Content = "Grafica ridotta al minimo con successo.", Duration = 4})
 end
 
--- Funzione Pulizia Memoria
+-- Funzione Pulizia Memoria RAM
 local function CleanMemory()
     if gcinfo then
         local prima = gcinfo()
@@ -84,10 +84,10 @@ local function CleanMemory()
 end
 
 -- =======================================================
--- INTERFACCIA GRAFICA
+-- INTERFACCIA GRAFICA (ELEMENTI)
 -- =======================================================
 
-MainTab:CreateSection("⚙️ Protezione Account")
+MainTab:CreateSection("🛡️ Protezione Account")
 
 MainTab:CreateButton({
    Name = "🛡️ Attiva Anti-Game Paused (Anti-AFK)",
@@ -119,6 +119,7 @@ MainTab:CreateSection("📊 Monitor di Sistema")
 local FpsLabel = MainTab:CreateLabel("Calcolo FPS in corso...")
 local PingLabel = MainTab:CreateLabel("Calcolo Ping in corso...")
 
+-- Loop per aggiornare i contatori reali ogni secondo
 task.spawn(function()
     local Stats = game:GetService("Stats")
     while task.wait(1) do
